@@ -2,7 +2,6 @@ import tkinter as tk
 import tkinter.font as tkfont
 import os
 import sys
-import random
 import math
 
 # رنگ‌ها (سبز پسته‌ای پررنگ‌تر)
@@ -28,18 +27,19 @@ class App:
         self.canvas = tk.Canvas(root, width=800, height=600, bg=PISTACHIO, highlightthickness=0)
         self.canvas.pack()
 
-        # بارگذاری فونت وزیرمتن (اگر در فایل exe باشد)
-        font_path = resource_path("vazirmatn.ttf")
+        # بارگذاری فونت وزیرمتن (دقیقاً با نام فایلی که آپلود کردید)
+        font_path = resource_path("Vazirmatn-Bold.ttf")
+        self.font_family = "Arial" # پیش‌فرض
+        
         if os.path.exists(font_path):
             try:
-                # ثبت فونت در سیستم
+                # ثبت فونت در سیستم برای استفاده در Tkinter
                 tkfont.Font(file=font_path, size=10)
                 self.font_family = "Vazirmatn"
-            except:
-                self.font_family = "Arial"
-        else:
-            self.font_family = "Arial"
+            except Exception as e:
+                print(f"Font loading error: {e}")
 
+        # ایجاد متن اولیه با رنگ هم‌رنگ پس‌زمینه (برای فید شدن)
         self.text_item = self.canvas.create_text(400, 300, text="حرکت بدن", fill=PISTACHIO, font=(self.font_family, 80, "bold"))
 
         # شروع فید شدن (طول ۱ ثانیه = 1000 میلی‌ثانیه)
@@ -49,6 +49,7 @@ class App:
     def fade_in(self):
         if self.alpha < 1.0:
             self.alpha += 0.05 # 20 مرحله * 50ms = 1 ثانیه
+            # تبدیل تدریجی رنگ از سبز به سفید
             r = int(0x7F + (0xFF - 0x7F) * self.alpha)
             g = int(0xA6 + (0xFF - 0xA6) * self.alpha)
             b = int(0x5A + (0xFF - 0x5A) * self.alpha)
@@ -56,19 +57,16 @@ class App:
             self.canvas.itemconfig(self.text_item, fill=color)
             self.root.after(50, self.fade_in)
         else:
-            # متن ظاهر شد، کمی صبر می‌کنیم و بعد تبدیل را شروع می‌کنیم
+            # متن ظاهر شد، کمی صبر می‌کنیم و بعد تبدیل (Morph) را شروع می‌کنیم
             self.root.after(500, self.start_morph)
 
     def start_morph(self):
-        # تبدیل شوندگان: متن محو می‌شود و آدمک ظاهر می‌شود
-        # برای سادگی و روانی، اینجا یک انیمیشن ترکیبی اجرا می‌کنیم
-        
         # مختصات اولیه آدمک در وسط صفحه (جایی که متن بود)
         self.stickman_x = 400
-        self.stickman_y = 300
+        self.stickman_y = 320 # کمی پایین‌تر برای جا شدن پاها
         
         self.morph_step = 0
-        self.morph_total_steps = 20
+        self.morph_total_steps = 20 # تعداد فریم‌های انیمیشن تبدیل
         self.run_morph()
 
     def run_morph(self):
@@ -115,11 +113,13 @@ class App:
                                 outline=color, width=3, tags="stickman")
         # گردن و تنه
         self.canvas.create_line(x, y - body_len + head_r, x, y, fill=color, width=3, tags="stickman")
-        # دست‌ها (مفصل‌دار - شبیه ضربدر یا زاویه)
+        
+        # دست‌ها (مفصل‌دار)
         # بازوی راست: از شانه به سمت راست و پایین
         self.canvas.create_line(x, y - body_len/2, x + arm_len, y - body_len/2 + (arm_len/2), fill=color, width=3, tags="stickman")
         # بازوی چپ: از شانه به سمت چپ و پایین
         self.canvas.create_line(x, y - body_len/2, x - arm_len, y - body_len/2 + (arm_len/2), fill=color, width=3, tags="stickman")
+        
         # پاها (مفصل‌دار)
         # پای راست
         self.canvas.create_line(x, y, x + leg_len/1.5, y + leg_len, fill=color, width=3, tags="stickman")
@@ -135,11 +135,11 @@ class App:
     def run(self):
         if self.run_x < 900: # تا خارج شدن از کادر
             self.run_x += 10
-            self.draw_running_stickman(self.run_x, 300, self.run_step)
+            self.draw_running_stickman(self.run_x, 320, self.run_step)
             self.run_step += 1
             self.root.after(40, self.run)
         else:
-            # وقتی خارج شد
+            # وقتی خارج شد، برنامه متوقف می‌شود (یا می‌توانید دکمه خروج بگذارید)
             pass
 
     def draw_running_stickman(self, x, y, step):
