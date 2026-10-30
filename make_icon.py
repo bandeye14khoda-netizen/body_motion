@@ -49,4 +49,4 @@ for size in sizes:
 
 # ذخیره به عنوان فایل ico با تمام سایزها
 images[0].save('icon.ico', format='ICO', sizes=[(s, s) for s in sizes])
-print("آیکون با موفقیت ساخته شد: icon.ico")
+print("Icon created successfully: icon.ico")
