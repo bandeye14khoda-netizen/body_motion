@@ -16,11 +16,16 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install PyInstaller
-        run: pip install pyinstaller
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller pillow
+
+      - name: Generate Icon
+        run: python make_icon.py
 
       - name: Build EXE
-        run: pyinstaller --onefile --noconsole --name "BodyMotion" main.py
+        run: pyinstaller --onefile --noconsole --name "BodyMotion" --icon=icon.ico main.py
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
