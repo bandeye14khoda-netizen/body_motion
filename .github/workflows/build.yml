@@ -25,7 +25,7 @@ jobs:
         run: python make_icon.py
 
       - name: Build EXE
-        run: pyinstaller --onefile --noconsole --name "BodyMotion" --icon=icon.ico main.py
+        run: pyinstaller --onefile --noconsole --name "BodyMotion" --icon=icon.ico --add-data "Vazirmatn-Bold.ttf;." main.py
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
